@@ -6,7 +6,7 @@ def index(request):
     # api_key = open("/home/geetansh/API_KEY","r").read()
     api_key ='76b657ee31af664ffd4b74f957a85d0f'
     current_weather_url = 'https://api.openweathermap.org/data/2.5/weather?q={}&appid={}'
-    forecast_url = 'https://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&exclude=current,minutely,hourly,alerts&appid={}'
+    forecast_url = 'https://api.openweathermap.org/data/2.5/forecast/daily?lat={}&lon={}&cnt=7&appid={}'
 
     if request.method == 'POST':
         city1 = request.POST['city1']
@@ -43,15 +43,16 @@ def fetch_weather_and_forecast(city, api_key, current_weather_url, forecast_url)
         'description': response['weather'][0]['description'],
         'icon': response['weather'][0]['icon'],
     }
-
+    print(response)
+    print(forecast_response)
     daily_forecasts = []
-    for daily_data in forecast_response['list'][:5]:
+    for daily_data in forecast_response["list"]:
         daily_forecasts.append({
-            'day': datetime.datetime.fromtimestamp(daily_data['dt']).strftime('%A'),
-            'min_temp': round(daily_data['temp']['min'] - 273.15, 2),
-            'max_temp': round(daily_data['temp']['max'] - 273.15, 2),
-            'description': daily_data['weather'][0]['description'],
-            'icon': daily_data['weather'][0]['icon'],
-        })
+        "day": datetime.datetime.fromtimestamp(daily_data["dt"]).strftime("%A"),
+        "min_temp": round(daily_data["temp"]["min"] - 273.15, 2),
+        "max_temp": round(daily_data["temp"]["max"] - 273.15, 2),
+        "description": daily_data["weather"][0]["description"],
+        "icon": daily_data["weather"][0]["icon"],
+    })
     
     return weather_data, daily_forecasts
