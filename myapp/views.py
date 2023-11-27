@@ -1,12 +1,14 @@
 from django.shortcuts import render
+
+# Create your views here.
+from django.shortcuts import render
 import requests
 import datetime
 
 def index(request):
-    # api_key = open("/home/geetansh/API_KEY","r").read()
-    api_key ='76b657ee31af664ffd4b74f957a85d0f'
+    api_key = '251c587592757672389db422c6901409'
     current_weather_url = 'https://api.openweathermap.org/data/2.5/weather?q={}&appid={}'
-    forecast_url = 'https://api.openweathermap.org/data/2.5/forecast/daily?lat={}&lon={}&cnt=7&appid={}'
+    forecast_url = 'https://api.openweathermap.org/data/3.0/onecall?lat={}&lon={}&exclude=current,hourly,minutely,alerts&appid={}'
 
     if request.method == 'POST':
         city1 = request.POST['city1']
@@ -31,7 +33,7 @@ def index(request):
     else:
         return render(request, 'myapp/index.html')
 
-#this function requests through api for weather data
+
 def fetch_weather_and_forecast(city, api_key, current_weather_url, forecast_url):
     response = requests.get(current_weather_url.format(city, api_key)).json()
     lat, lon = response['coord']['lat'], response['coord']['lon']
@@ -46,13 +48,13 @@ def fetch_weather_and_forecast(city, api_key, current_weather_url, forecast_url)
     print(response)
     print(forecast_response)
     daily_forecasts = []
-    for daily_data in forecast_response["list"]:
+    for daily_data in forecast_response['daily'][:5]:
         daily_forecasts.append({
-        "day": datetime.datetime.fromtimestamp(daily_data["dt"]).strftime("%A"),
-        "min_temp": round(daily_data["temp"]["min"] - 273.15, 2),
-        "max_temp": round(daily_data["temp"]["max"] - 273.15, 2),
-        "description": daily_data["weather"][0]["description"],
-        "icon": daily_data["weather"][0]["icon"],
-    })
-    
+            'day': datetime.datetime.fromtimestamp(daily_data['dt']).strftime('%A'),
+            'min_temp': round(daily_data['temp']['min'] - 273.15, 2),
+            'max_temp': round(daily_data['temp']['max'] - 273.15, 2),
+            'description': daily_data['weather'][0]['description'],
+            'icon': daily_data['weather'][0]['icon'],
+        })
+
     return weather_data, daily_forecasts
